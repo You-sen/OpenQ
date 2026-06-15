@@ -583,6 +583,7 @@ def build_final_payload(session: dict) -> Optional[FinalCandidatePayload]:
             screening_duration=c.get("screening_duration"),
             resume_url=c.get("resume_url", ""),
             interview_summary=c.get("interview_summary"),
+            application_id=c.get("application_id"),
             # interview_score intentionally omitted from payload
         )
     except Exception as e:

@@ -349,18 +349,18 @@ async def otp_verify(request: OTPVerifyRequest):
                 OTP_BACKEND_VERIFY_URL,
                 json={
                     "email": email,
-                    "code": request.code.strip(),   # adjust field names to match your backend
+                    "code": int(request.code.strip()),  # backend expects integer
                 },
             )
- 
+
             # If backend returns 4xx, it means wrong code or expired — not a server error
             if response.status_code == 400 or response.status_code == 422:
                 detail = _extract_error_message(response)
                 raise HTTPException(status_code=400, detail=detail or "Invalid or expired verification code.")
- 
+
             response.raise_for_status()
             body = response.json()
- 
+
     except HTTPException:
         raise   # re-raise our own 400s
     except httpx.TimeoutException:
@@ -371,23 +371,25 @@ async def otp_verify(request: OTPVerifyRequest):
     except Exception as e:
         logger.error(f"OTP verify unexpected error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Could not reach OTP service.")
- 
-    # Check the response body — your backend may return { "validated": true } or { "success": true }
-    # Adjust the key name below to match your backend's actual response shape
-    is_valid = (
-        body.get("validated") is True
-        or body.get("success") is True
-        or body.get("verified") is True
-        or body.get("valid") is True
-    )
- 
+
+    # Your backend returns { "success": true, "data": { "id": "...", "email": "..." } }
+    is_valid = body.get("success") is True
+
     if not is_valid:
         raise HTTPException(status_code=400, detail="Invalid or expired verification code. Please try again.")
- 
+
+    # Store application_id from the other backend's response into session
+    application_data = body.get("data") or {}
+    application_id = application_data.get("id")
+    if application_id:
+        session.setdefault("candidate", {})
+        session["candidate"]["application_id"] = application_id
+        logger.info(f"Stored application_id {application_id} for session {request.session_id}")
+
     # Advance session step
     session["step"] = SessionStep.otp_verified
     hiring_cache.save_session(request.session_id, session)
- 
+
     logger.info(f"OTP verified via external backend for session {request.session_id}")
     return {"validated": True}
  
@@ -409,7 +411,7 @@ def _extract_error_message(response: httpx.Response) -> Optional[str]:
 #  POST /hiring/resume/upload
 # ============================================================
 
-@router.post("/resume/upload", response_model=ResumeUploadResponse, summary="Upload candidate resume")
+@router.post("/resume/upload", response_model=ChatResponse, summary="Upload candidate resume")
 async def resume_upload(
     session_id: str = Form(...),
     resume: UploadFile = File(..., description="Candidate resume PDF"),

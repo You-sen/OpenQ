@@ -60,6 +60,9 @@ class CandidateData(BaseModel):
     # Step 5 — resume
     resume_url: Optional[str] = None
 
+    # From external OTP backend verify response
+    application_id: Optional[str] = None      # data.id returned by /verify-and-apply
+
 
 # ---------------------------------------------------------------------------
 # Redis session blob
@@ -130,6 +133,7 @@ class FinalCandidatePayload(BaseModel):
     screening_duration: Optional[int]      # None = skipped
     resume_url: str
     interview_summary: Optional[str]
+    application_id: Optional[str] = None   # from external backend verify response
     # NOTE: interview_score is intentionally excluded — never sent to candidate/frontend
 
 
