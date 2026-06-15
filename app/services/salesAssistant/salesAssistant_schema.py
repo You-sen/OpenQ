@@ -53,11 +53,11 @@ class Service(BaseModel):
     A top-level service category with its available sub-services.
     Example: Internet → [Home Connection, Ultimate Pro, ...]
     """
-    id: str                              # e.g. "internet"
-    name: str                            # e.g. "Internet"
+    id: Optional[str]                              # e.g. "internet"
+    name: Optional[str]                            # e.g. "Internet"
     icon: Optional[str] = None          # optional, ignored by AI
-    sub_services: List[SubService] = []
-    applicable_discounts: List[Discount] = []
+    sub_services: Optional[List[SubService]] = []
+    applicable_discounts: Optional[List[Discount]] = []
 
 
 # ============================================================
