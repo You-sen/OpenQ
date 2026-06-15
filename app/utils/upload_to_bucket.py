@@ -44,7 +44,6 @@ def upload_file_to_s3(file_path: str, bucket_name: str = None, object_name: str 
             bucket_name,
             object_name,
             ExtraArgs={
-                'ACL': 'public-read',
                 'ContentType': get_content_type(file_path)
             }
         )
@@ -75,7 +74,6 @@ def upload_file_object_to_s3(file_object, bucket_name: str = None, object_name: 
             bucket_name,
             object_name,
             ExtraArgs={
-                'ACL': 'public-read',
                 'ContentType': get_content_type(object_name)
             }
         )
@@ -161,15 +159,11 @@ def upload_bytes_to_s3(
     if bucket_name is None:
         bucket_name = S3_BUCKET_NAME
     try:
-        extra_args = {"ContentType": content_type}
-        if public:
-            extra_args["ACL"] = "public-read"
-
         s3_client.upload_fileobj(
             BytesIO(data),
             bucket_name,
             object_name,
-            ExtraArgs=extra_args,
+            ExtraArgs={"ContentType": content_type},
         )
         file_url = _build_url(bucket_name, object_name)
         logger.info(f"Bytes uploaded successfully: {file_url}")
