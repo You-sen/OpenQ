@@ -1,0 +1,35 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Environment variables
+.env
+
+# VSCode
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+venv/
+ENV/
+.venv/
+
+
+
+# Logs
+*.log
+
+# chromaDB local storage
+chroma_db/
+
+# Ignore local config
+*.local
+
+# Ignore docker-compose override
+*docker-compose.override.yml
