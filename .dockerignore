@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*.log
+*.env
+.env
+venv/
+ENV/
+.venv/
+.git/
+.vscode/
+.DS_Store
+Thumbs.db
+static/edited_images/
+temp_images/
