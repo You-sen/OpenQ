@@ -8,7 +8,7 @@ services:
       - .env
     volumes:
       - .:/app
-      - ./chroma_db:/app/chroma_db 
+      - chroma_db_data:/app/chroma_db  # named volume — Docker manages ownership, avoids permission issues
     restart: unless-stopped
     networks:
       - openQ_network
@@ -34,3 +34,42 @@ services:
 networks:
   openQ_network:
     driver: bridge
+
+volumes:
+  chroma_db_data:  # Docker-managed named volume, no host permission conflicts
+# services:
+#   app:
+#     build: .
+#     container_name: openQ_app
+#     ports:
+#       - "8085:8085"
+#     env_file:
+#       - .env
+#     volumes:
+#       - .:/app
+#       - ./chroma_db:/app/chroma_db 
+#     restart: unless-stopped
+#     networks:
+#       - openQ_network
+#     depends_on:
+#       - redis
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:8085/health"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+#       start_period: 40s
+
+#   redis:
+#     image: redis:7-alpine
+#     container_name: openQ_redis
+#     ports:
+#       - "6379:6379"
+#     restart: unless-stopped
+#     networks:
+#       - openQ_network
+#     command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+# networks:
+#   openQ_network:
+#     driver: bridge
